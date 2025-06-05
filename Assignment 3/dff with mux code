@@ -1,0 +1,58 @@
+Design code
+
+  module d_flip_flop (
+    input clk,
+    input rst,       // asynchronous reset
+    input d,
+    output reg q
+);
+    always @(posedge clk or posedge rst) begin
+        if (rst)
+            q <= 1'b0;
+        else
+            q <= d;
+    end
+endmodule
+
+      Testbench
+
+      `timescale 1ns / 1ps
+
+module d_flip_flop_tb;
+
+    reg clk, rst, d;
+    wire q;
+
+    // Instantiate the D Flip-Flop
+    d_flip_flop uut (
+        .clk(clk),
+        .rst(rst),
+        .d(d),
+        .q(q)
+    );
+
+    // Clock generator: 10ns period
+    always #5 clk = ~clk;
+
+    initial begin
+        // Initialize signals
+        clk = 0;
+        rst = 1;
+        d = 0;
+
+        // Dump file for waveform viewing
+        $dumpfile("dff.vcd");
+        $dumpvars(0);
+
+        // Reset and test behavior
+        #10 rst = 0; d = 1;
+        #10 d = 0;
+        #10 d = 1;
+        #10 d = 1;
+        #10 rst = 1; // Apply async reset
+        #10 rst = 0; d = 0;
+        #10 d = 1;
+        #30 $finish;
+    end
+
+endmodule
